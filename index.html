@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		
+		<title>Taxi Driver</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		  
+		<meta name="apple-touch-fullscreen" content="yes">
+		<meta name="apple-mobile-web-app-title" content="Taxi Driver">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucentt">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		
+		<link rel="icon" href="assets/ios/180.png" sizes="180x180">
+		
+
+		<link rel="apple-touch-icon" sizes="152x152" href="assets/ios/152.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="assets/ios/180.png">
+		<link rel="apple-touch-icon" sizes="167x167" href="assets/ios/167.png">
+		
+		<link href="assets/splashscreens/iphone5_splash.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+		<link href="assets/splashscreens/iphone6_splash.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+		<link href="assets/splashscreens/iphoneplus_splash.png" media="(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
+		<link href="assets/splashscreens/iphonex_splash.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
+		<link href="assets/splashscreens/iphonexr_splash.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+		<link href="assets/splashscreens/iphonexsmax_splash.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
+		<link href="assets/splashscreens/ipad_splash.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+		<link href="assets/splashscreens/ipadpro1_splash.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+		<link href="assets/splashscreens/ipadpro3_splash.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+		<link href="assets/splashscreens/ipadpro2_splash.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+		
+	<style>
+	* {
+		margin:0;
+		padding:0;
+	}
+	
+	html, body {
+		width:100%;
+		height:100%;
+		-webkit-user-select: none;
+		touch-action: manipulation;
+		background-color:rgb(73,55,55);
+	}
+	
+	canvas {
+		display:block; /* Remove scroll */
+		background-color:#f1f1f1;
+		background-image:url("assets/road.jpg");
+		background-repeat: no-repeat;
+		background-position:center;
+		background-size:cover;
+	}
+	
+	.controllers {
+		background-color:black;
+		display: flex;
+		position:absolute;
+		bottom:0;
+		width:100%;
+	}
+	
+	.controllers button {
+		border:none;
+		flex-grow: 1;
+		color:green;
+		background-color:black;
+		font-size:25px;
+		padding:25px 25px 25px 25px;
+	}
+	.controllers button:active {
+		color:white;
+	}
+	</style>		
+	</head>
+<body onload="startGame()">
+	<script>
+	/* Vars */
+	var spawnX = window.innerWidth / 2 + 20;
+	var spawnY = window.innerHeight - 140;
+	
+	
+	// Assets
+	//var myBackground;
+	
+	// Score
+	var myScore;
+	var endGameScore;
+	
+	// Player
+	var myGamePiece;
+	
+	// Obstacles
+	var myObstacles = [];
+	
+	function startGame() {
+		
+		// Assets
+		//myBackground = new component(window.innerWidth , 838, "assets/road.jpg", 0,0, "background");
+		//console.log("Asset: background");
+		
+		// Player spawn
+		//myGamePiece = new component(50, 50, "green", spawnX, spawnY, "");
+		myGamePiece = new component(50, 50, "assets/yellow-car.png", spawnX, spawnY, "image");
+		console.log("Player: spawned");
+		
+		// Score
+		myScore = new component("25px", "Consolas", "yellow", 20, 30, "text")
+		console.log("Asset: score");
+		
+		
+		//
+		//myObstacles = new component(150, 50, "green", 0, 0);
+		
+		// Start game
+		myGameArea.start();
+		console.log("Game: started");
+	}
+	
+	var myGameArea = {
+		canvas : document.createElement("canvas"),
+		start : function() {
+			this.canvas.width = window.innerWidth;
+			this.canvas.height = window.innerHeight - 80;
+			this.context = this.canvas.getContext("2d");
+			document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+			
+			// Frame count
+			this.frameNo = 0;
+			
+			// Update frame
+			this.interval = setInterval(updateGameArea, 20);
+			
+			// Using keys for controll
+			window.addEventListener('keydown', function (e){
+				myGameArea.key = e.keyCode;
+			})
+			window.addEventListener('keyup', function (e){
+				myGameArea.key = false;
+			})
+		},
+		clear : function() {
+			this.context.clearRect(0,0, this.canvas.width, this.canvas.height);
+		},
+		stop : function() {
+			clearInterval(this.interval);
+			console.log('Game Over');
+		},
+		viewScore : function() {
+			
+			
+			myScore = new component("40px", "Consolas", "black", myGameArea.canvas.width / 5, myGameArea.canvas.height / 2, "text");
+			myScore.text = "SCORE:" + myGameArea.frameNo + "$";
+			myScore.update();
+		},
+		restart : function() {
+			console.log("Game restart");
+			setTimeout(function () { location.reload(true); }, 5000);
+			
+		}
+		
+	}
+	
+	function component(width, height, color, x, y, type) {
+		this.type = type;
+		
+		if(type == "image" || type == "background"){
+			this.image = new Image();
+			this.image.src = color;
+		}
+		
+		this.width = width;
+		this.height = height;
+		
+		this.speedX = 0;
+		this.speedY = 0;
+		
+		this.x = x;
+		this.y = y;
+		
+		this.update = function(){
+		//console.log(`-- Start draw cycle --`)
+		ctx = myGameArea.context;
+			
+			if (!type) {
+				//console.log(`Drawing rect ${this.x} ${this.y}`)
+				ctx.fillStyle = color;
+				ctx.fillRect(this.x, this.y, this.width, this.height);
+			} else if(this.type == "text"){
+				//console.log(`Drawing text ${this.text}`)
+				ctx.font = this.width + " " + this.height;
+				ctx.fillStyle = color;
+				ctx.fillText(this.text, this.x, this.y);
+			}
+			if (type == "image") {
+            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+			}
+			
+			/*else if (type == "image" || type == "background"){
+				//ctx.globalAlpha = 0.4;
+				if (type == "image") {
+				//console.log(`Drawing image ${color}`)
+				ctx.drawImage(this.image,this.x, this.y, this.width, this.height);
+				} else if(type == "background"){
+					//console.log(`Drawing background ${color}`)
+					ctx.drawImage(this.image, this.x, this.y + this.height, this.width, this.height);
+				}
+				//ctx.globalAlpha = 1.0;
+			}*/
+				//console.log(`-- End draw cycle --`)
+		}
+		this.newPos = function() {
+			if(this.x >= 0 && this.x <= myGameArea.canvas.width - 50){
+				this.x += this.speedX;
+				//console.log(this.x);
+			} else if (this.x <= 0) {
+				console.log('Hit left')
+				this.x = 25;
+			} else if (this.x >= myGameArea.canvas.width - 75) {
+				console.log('Hit right')
+				this.x = myGameArea.canvas.width - 75
+			}
+			this.y += this.speedY;
+			
+			if (this.type == "background"){
+				if(this.y == -(this.height)){
+					this.y = 0;
+				}
+			}
+		}
+		
+		// Collision
+		this.crashWith = function(otherobj) {
+        var myleft = this.x;
+        var myright = this.x + (this.width);
+        var mytop = this.y;
+        var mybottom = this.y + (this.height);
+        var otherleft = otherobj.x;
+        var otherright = otherobj.x + (otherobj.width);
+        var othertop = otherobj.y;
+        var otherbottom = otherobj.y + (otherobj.height);
+        var crash = true;
+        if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
+            crash = false;
+        }
+        return crash;
+    }
+
+	}
+	
+	function updateGameArea(){
+		
+		var x, y;
+		
+		for (i =0; i < myObstacles.length; i +=1){
+			if(myGamePiece.crashWith(myObstacles[i])){
+				myGameArea.stop();
+				myGameArea.clear();
+				myGameArea.viewScore();
+				myGameArea.restart();
+				
+				return;
+			}
+		}
+		
+		// Clear game area
+		myGameArea.clear();
+
+		myGameArea.frameNo += 1;
+		
+		
+		// Add Obstacles
+		if(myGameArea.frameNo == 1 || everyinterval(150)){
+		
+			x =  50 + getRandomInt(myGameArea.canvas.width - 100);
+			y = 0;
+			
+		
+			myObstacles.push(new component(50, 50, "assets/red-car.png", x, y, "image"));
+			
+			if(myGameArea.frameNo > 1000){
+				myObstacles.push(new component(50, 150, "assets/school-bus.png", x / 2, y, "image"));
+			}
+		} 
+		//console.log(myObstacles.length);
+		
+		// Move Obstacles		
+		for (i = 0; i < myObstacles.length; i += 1) {
+			myObstacles[i].y += 1;
+			//console.log(myObstacles[i].y);
+			myObstacles[i].update();
+		}
+		
+		// Remove Obstacles outside viewport
+		
+		// Background
+		//myBackground.speedY = -1;
+		//myBackground.newPos();
+		//myBackground.update();			
+		
+		
+		// Score
+		myScore.text = "SCORE: " + myGameArea.frameNo + "$";
+		myScore.update();
+		
+		// Move
+		if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -1; }
+		if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 1; }
+		//if (myGameArea.key && myGameArea.key == 38) {myGamePiece.speedY = -1; }
+		//if (myGameArea.key && myGameArea.key == 40) {myGamePiece.speedY = 1; }
+		myGamePiece.newPos();
+		myGamePiece.update();
+		
+	}
+	
+	function everyinterval(n){
+		if((myGameArea.frameNo / n) % 1 == 0) {return true;}
+		return false;
+	}
+	
+	function clearmove() {
+		myGamePiece.speedX = 0;
+		myGamePiece.speedY = 0;
+	}
+	
+	function moveleft() {
+		
+		myGamePiece.speedX -= 1;
+
+	}
+	
+	function moveright() {
+		myGamePiece.speedX += 1;
+	}
+	
+	/* Extra */
+	function getRandomInt(max) {
+		return Math.floor(Math.random() * max);
+	}
+	
+	/* Debug function */
+	
+	
+	</script>
+	<div class="controllers">
+		<button onmousedown="moveleft()" onmouseup="clearmove()" ontouchstart="moveleft()">&#11164;</button>
+		<button onmousedown="moveright()" onmouseup="clearmove()" ontouchstart="moveright()">&#11166;</button>
+	</div>
+</body>
+</html>
