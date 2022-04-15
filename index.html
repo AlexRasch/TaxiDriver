@@ -46,7 +46,7 @@
 	canvas {
 		display:block; /* Remove scroll */
 		background-color:#f1f1f1;
-		background-image:url("assets/road.jpg");
+		background-image:url("assets/road.png");
 		background-repeat: no-repeat;
 		background-position:center;
 		background-size:cover;
@@ -77,9 +77,9 @@
 	<script>
 	/* Vars */
 	var spawnX = window.innerWidth / 2 + 20;
-	var spawnY = window.innerHeight - 140;
+	var spawnY = window.innerHeight - 160;
 	
-	
+	var Obstacles = ["red-car", "blue-car", "grey-car"]
 	// Assets
 	//var myBackground;
 	
@@ -101,7 +101,7 @@
 		
 		// Player spawn
 		//myGamePiece = new component(50, 50, "green", spawnX, spawnY, "");
-		myGamePiece = new component(50, 50, "assets/yellow-car.png", spawnX, spawnY, "image");
+		myGamePiece = new component(50, 75, "assets/yellow-car.png", spawnX, spawnY, "image");
 		console.log("Player: spawned");
 		
 		// Score
@@ -274,12 +274,11 @@
 		
 			x =  50 + getRandomInt(myGameArea.canvas.width - 100);
 			y = 0;
-			
-		
-			myObstacles.push(new component(50, 50, "assets/red-car.png", x, y, "image"));
-			
-			if(myGameArea.frameNo > 1000){
-				myObstacles.push(new component(50, 150, "assets/school-bus.png", x / 2, y, "image"));
+
+			if(myGameArea.frameNo == 1000 || myGameArea.frameNo == 3000 || myGameArea.frameNo == 5000 || myGameArea.frameNo == 10000){
+				myObstacles.push(new component(50, 200, "assets/school-bus.png", x / 2, y, "image"));
+			}else{
+				myObstacles.push(new component(50, 75, "assets/" + "blue-car" + ".png", x, y, "image"));
 			}
 		} 
 		//console.log(myObstacles.length);
